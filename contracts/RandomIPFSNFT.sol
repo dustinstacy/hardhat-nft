@@ -3,11 +3,11 @@ pragma solidity ^0.8.19;
 
 import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 error RandomIPFSNFT_RangeOutOfBounds();
 
-contract RandomIPFSNFT is VRFConsumerBaseV2, ERC721 {
+contract RandomIPFSNFT is VRFConsumerBaseV2, ERC721URIStorage {
     // Type Declaration
     enum Breed {
         PUG,
@@ -28,18 +28,21 @@ contract RandomIPFSNFT is VRFConsumerBaseV2, ERC721 {
 
     // NFT Variables
     uint256 public _tokenCounter;
+    string[] internal _dogTokenURIs;
     uint256 internal constant MAX_CHANCE_VALUE = 100;
 
     constructor(
         address vrfCoordinatorV2,
         bytes32 keyHash,
         uint64 subId,
-        uint32 callbackGasLimit
+        uint32 callbackGasLimit,
+        string[3] memory dogTokenURIs
     ) VRFConsumerBaseV2(vrfCoordinatorV2) ERC721("RandoPups", "RPUP") {
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
         i_keyHash = keyHash;
         i_subId = subId;
         i_callbackGasLimit = callbackGasLimit;
+        _dogTokenURIs = dogTokenURIs;
     }
 
     function requestNFT() public returns (uint256 requestId) {
@@ -62,6 +65,7 @@ contract RandomIPFSNFT is VRFConsumerBaseV2, ERC721 {
         uint256 moddedRNG = randomWords[0] % MAX_CHANCE_VALUE;
         Breed dogBreed = getBreedFromModdedRNG(moddedRNG);
         _safeMint(dogOwner, newTokenId);
+        _setTokenURI(newTokenId, _dogTokenURIs[uint256(dogBreed)]);
     }
 
     function getChanceArray() public pure returns (uint256[3] memory) {
