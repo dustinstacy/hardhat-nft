@@ -35,6 +35,10 @@ contract RandomIPFSNFT is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
     uint256 internal constant MAX_CHANCE_VALUE = 100;
     uint256 internal i_mintFee;
 
+    //Events
+    event NFTRequested(uint256 indexed requestId, address requester);
+    event NFTMinted(Breed dogBreed, address minter);
+
     constructor(
         address vrfCoordinatorV2,
         bytes32 keyHash,
@@ -63,6 +67,7 @@ contract RandomIPFSNFT is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
             NUM_WORDS
         );
         _requestIdToSender[requestId] = msg.sender;
+        emit NFTRequested(requestId, msg.sender);
     }
 
     function fulfillRandomWords(
@@ -75,6 +80,7 @@ contract RandomIPFSNFT is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
         Breed dogBreed = getBreedFromModdedRNG(moddedRNG);
         _safeMint(dogOwner, newTokenId);
         _setTokenURI(newTokenId, _dogTokenURIs[uint256(dogBreed)]);
+        emit NFTMinted(dogBreed, dogOwner);
     }
 
     function withdraw() public onlyOwner {
