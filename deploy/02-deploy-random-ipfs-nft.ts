@@ -5,7 +5,7 @@ import { VRFCoordinatorV2Mock } from '../typechain-types'
 import verify from '../utils/verify'
 import storeImages from '../utils/uploadToPinata'
 
-const imagesLocation = './images/randomNFT'
+const imagesLocation = './images/randomNFT/'
 
 const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log, get } = deployments
