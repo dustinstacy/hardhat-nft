@@ -1,9 +1,11 @@
+import { Deployment, DeploymentsExtension } from 'hardhat-deploy/dist/types'
 import { Network } from 'hardhat/types'
 
 export interface DeployInterface {
     getNamedAccounts: () => Promise<{
         [name: string]: string
     }>
+    deployments: DeploymentsExtension
     network: Network
 }
 
