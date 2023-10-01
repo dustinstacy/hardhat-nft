@@ -24,4 +24,4 @@ const deployBasicNFT: DeployFunction = async ({ getNamedAccounts, deployments })
 }
 
 export default deployBasicNFT
-deployBasicNFT.tags = ['all']
+deployBasicNFT.tags = ['all', 'basic']

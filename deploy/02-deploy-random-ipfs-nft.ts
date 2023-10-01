@@ -1,8 +1,11 @@
 import { ethers, network } from 'hardhat'
 import { devChains, networkConfig } from '../helper-hardhat-config'
 import { DeployFunction } from 'hardhat-deploy/dist/types'
-import verify from '../utils/verify'
 import { VRFCoordinatorV2Mock } from '../typechain-types'
+import verify from '../utils/verify'
+import storeImages from '../utils/uploadToPinata'
+
+const imagesLocation = './images/randomNFT'
 
 const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log, get } = deployments
@@ -11,6 +14,11 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
     let vrfCoordinatorV2Address: string | undefined
     let vrfCoordinatorV2Mock: VRFCoordinatorV2Mock
     let subscriptionId: string | undefined
+    let tokenURIs
+
+    if (process.env.UPLOAD_TO_PINATA == 'true') {
+        tokenURIs = await handleTokenURIs()
+    }
 
     if (devChains.includes(network.name)) {
         const vrfCoordinatorV2MockDeployment = await get('VRFCoordinatorV2Mock')
@@ -27,13 +35,14 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
         subscriptionId = networkConfig[network.name]['subscriptionId']
     }
 
+    await storeImages(imagesLocation)
     const args: any[] = [
-        vrfCoordinatorV2Address,
-        networkConfig[network.name]['gasLane'],
-        subscriptionId,
-        networkConfig[network.name]['callbackGasLimit'],
-        networkConfig[network.name]['dogTokenURIs'],
-        networkConfig[network.name]['mintFee'],
+        // vrfCoordinatorV2Address,
+        // networkConfig[network.name]['gasLane'],
+        // subscriptionId,
+        // networkConfig[network.name]['callbackGasLimit'],
+        // networkConfig[network.name]['dogTokenURIs'],
+        // networkConfig[network.name]['mintFee'],
     ]
 
     const randomIPFSNFT = await deploy('RandomIPFSNFT', {
@@ -54,5 +63,10 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
     log('-------------------------')
 }
 
+const handleTokenURIs = async () => {
+    const tokenURIs: Array<any> = []
+    return tokenURIs
+}
+
 export default deployRandomIPFSNFT
-deployRandomIPFSNFT.tags = ['all']
+deployRandomIPFSNFT.tags = ['all', 'randomIPFS']
