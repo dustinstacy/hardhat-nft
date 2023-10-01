@@ -45,22 +45,22 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
         // networkConfig[network.name]['mintFee'],
     ]
 
-    const randomIPFSNFT = await deploy('RandomIPFSNFT', {
-        from: deployer,
-        args: args,
-        log: true,
-        waitConfirmations: networkConfig[network.name].blockConfirmations || 1,
-    })
+    // const randomIPFSNFT = await deploy('RandomIPFSNFT', {
+    //     from: deployer,
+    //     args: args,
+    //     log: true,
+    //     waitConfirmations: networkConfig[network.name].blockConfirmations || 1,
+    // })
 
-    if (devChains.includes(network.name)) {
-        await vrfCoordinatorV2Mock!.addConsumer(subscriptionId as string, randomIPFSNFT.address)
-    }
+    // if (devChains.includes(network.name)) {
+    //     await vrfCoordinatorV2Mock!.addConsumer(subscriptionId as string, randomIPFSNFT.address)
+    // }
 
-    if (!devChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
-        log('Verifying...')
-        await verify(randomIPFSNFT.address, args)
-    }
-    log('-------------------------')
+    // if (!devChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+    //     log('Verifying...')
+    //     await verify(randomIPFSNFT.address, args)
+    // }
+    // log('-------------------------')
 }
 
 const handleTokenURIs = async () => {
