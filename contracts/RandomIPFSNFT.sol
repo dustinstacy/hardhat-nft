@@ -68,6 +68,7 @@ contract RandomIPFSNFT is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
         );
         _requestIdToSender[requestId] = msg.sender;
         emit NFTRequested(requestId, msg.sender);
+        _tokenCounter = _tokenCounter + 1;
     }
 
     function fulfillRandomWords(
