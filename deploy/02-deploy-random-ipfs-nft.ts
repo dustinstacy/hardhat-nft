@@ -3,9 +3,20 @@ import { devChains, networkConfig } from '../helper-hardhat-config'
 import { DeployFunction } from 'hardhat-deploy/dist/types'
 import { VRFCoordinatorV2Mock } from '../typechain-types'
 import verify from '../utils/verify'
-import storeImages from '../utils/uploadToPinata'
+import { storeImages } from '../utils/uploadToPinata'
 
 const imagesLocation = './images/randomNFT/'
+const metadataTemplate = {
+    name: '',
+    description: '',
+    image: '',
+    attributes: [
+        {
+            trait_type: 'Cuteness',
+            value: 100,
+        },
+    ],
+}
 
 const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log, get } = deployments
@@ -35,15 +46,14 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
         subscriptionId = networkConfig[network.name]['subscriptionId']
     }
 
-    await storeImages(imagesLocation)
-    const args: any[] = [
-        // vrfCoordinatorV2Address,
-        // networkConfig[network.name]['gasLane'],
-        // subscriptionId,
-        // networkConfig[network.name]['callbackGasLimit'],
-        // networkConfig[network.name]['dogTokenURIs'],
-        // networkConfig[network.name]['mintFee'],
-    ]
+    // const args: any[] = [
+    //     vrfCoordinatorV2Address,
+    //     networkConfig[network.name]['gasLane'],
+    //     subscriptionId,
+    //     networkConfig[network.name]['callbackGasLimit'],
+    //     networkConfig[network.name]['dogTokenURIs'],
+    //     networkConfig[network.name]['mintFee'],
+    // ]
 
     // const randomIPFSNFT = await deploy('RandomIPFSNFT', {
     //     from: deployer,
@@ -65,6 +75,14 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
 
 const handleTokenURIs = async () => {
     const tokenURIs: Array<any> = []
+    const { responses: imageUploadResponses, files } = await storeImages(imagesLocation)
+    for (const imageUploadResponseIndex in imageUploadResponses) {
+        let tokenURIMetadata = { ...metadataTemplate }
+        tokenURIMetadata.name = files[imageUploadResponseIndex].replace('.png', '')
+        tokenURIMetadata.description = `An adorable ${tokenURIMetadata.name} pup!`
+        tokenURIMetadata.image = `ipfs://${imageUploadResponses[imageUploadResponseIndex].IpfsHash}`
+        console.log(`Uploading ${tokenURIMetadata.name}...`)
+    }
     return tokenURIs
 }
 

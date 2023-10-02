@@ -7,19 +7,7 @@ const pinataAPIkey = process.env.PINATA_API_KEY
 const pinataAPISecret = process.env.PINATA_API_SECRET
 const pinata = new pinataSDK(pinataAPIkey, pinataAPISecret)
 
-const metadataTemplate = {
-    name: '',
-    description: '',
-    image: '',
-    attributes: [
-        {
-            trait_type: 'Cuteness',
-            value: 100,
-        },
-    ],
-}
-
-const storeImages = async (imagesFilePath: string) => {
+export const storeImages = async (imagesFilePath: string) => {
     const fullImagesPath = path.resolve(imagesFilePath)
     const files = fs.readdirSync(fullImagesPath)
     let responses = []
@@ -42,4 +30,4 @@ const storeImages = async (imagesFilePath: string) => {
     return { responses, files }
 }
 
-export default storeImages
+export const storeTokenURIMetadata = (metadata: Object) => {}
