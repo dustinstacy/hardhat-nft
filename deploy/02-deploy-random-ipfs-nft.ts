@@ -5,6 +5,7 @@ import { VRFCoordinatorV2Mock } from '../typechain-types'
 import verify from '../utils/verify'
 import { storeImages, storeTokenURIMetadata } from '../utils/uploadToPinata'
 
+const FUND_AMOUNT = '1000000000000000000000'
 const imagesLocation = './images/randomNFT/'
 const metadataTemplate = {
     name: '',
@@ -45,6 +46,7 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
         const tx = await vrfCoordinatorV2Mock.createSubscription()
         const txReceipt = await tx.wait()
         subscriptionId = txReceipt!.logs[0].topics[1]
+        await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, FUND_AMOUNT)
     } else {
         vrfCoordinatorV2Address = networkConfig[network.name]['vrfCoordinatorV2']
         subscriptionId = networkConfig[network.name]['subscriptionId']
