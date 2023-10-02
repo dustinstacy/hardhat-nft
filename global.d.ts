@@ -18,6 +18,7 @@ interface networkConfigItem {
     interval?: number
     blockConfirmations?: number
     contractAddress?: string
+    mintFee?: string
 }
 
 export interface networkConfigInfo {

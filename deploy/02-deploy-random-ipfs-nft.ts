@@ -25,7 +25,11 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
     let vrfCoordinatorV2Address: string | undefined
     let vrfCoordinatorV2Mock: VRFCoordinatorV2Mock
     let subscriptionId: string | undefined
-    let tokenURIs
+    let tokenURIs = [
+        'ipsf://QmaVkBn2tKmjbhphU7eyztbvSQU5EXDdqRyXZtRhSGgJGo',
+        'ipsf://QmYQC5aGZu2PTH8XzbJrbDnvhj3gVs7ya33H9mqUNvST3d',
+        'ipsf://QmZYmH5iDbD6v3U2ixoVAjioSzvWJszDzYdbeCLquGSpVm',
+    ]
 
     if (process.env.UPLOAD_TO_PINATA == 'true') {
         tokenURIs = await handleTokenURIs()
@@ -46,31 +50,31 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
         subscriptionId = networkConfig[network.name]['subscriptionId']
     }
 
-    // const args: any[] = [
-    //     vrfCoordinatorV2Address,
-    //     networkConfig[network.name]['gasLane'],
-    //     subscriptionId,
-    //     networkConfig[network.name]['callbackGasLimit'],
-    //     networkConfig[network.name]['dogTokenURIs'],
-    //     networkConfig[network.name]['mintFee'],
-    // ]
+    const args: any[] = [
+        vrfCoordinatorV2Address,
+        networkConfig[network.name]['gasLane'],
+        subscriptionId,
+        networkConfig[network.name]['callbackGasLimit'],
+        tokenURIs,
+        networkConfig[network.name]['mintFee'],
+    ]
 
-    // const randomIPFSNFT = await deploy('RandomIPFSNFT', {
-    //     from: deployer,
-    //     args: args,
-    //     log: true,
-    //     waitConfirmations: networkConfig[network.name].blockConfirmations || 1,
-    // })
+    const randomIPFSNFT = await deploy('RandomIPFSNFT', {
+        from: deployer,
+        args: args,
+        log: true,
+        waitConfirmations: networkConfig[network.name].blockConfirmations || 1,
+    })
 
-    // if (devChains.includes(network.name)) {
-    //     await vrfCoordinatorV2Mock!.addConsumer(subscriptionId as string, randomIPFSNFT.address)
-    // }
+    if (devChains.includes(network.name)) {
+        await vrfCoordinatorV2Mock!.addConsumer(subscriptionId as string, randomIPFSNFT.address)
+    }
 
-    // if (!devChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
-    //     log('Verifying...')
-    //     await verify(randomIPFSNFT.address, args)
-    // }
-    // log('-------------------------')
+    if (!devChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+        log('Verifying...')
+        await verify(randomIPFSNFT.address, args)
+    }
+    log('-------------------------')
 }
 
 const handleTokenURIs = async () => {
