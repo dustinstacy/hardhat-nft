@@ -3,7 +3,7 @@ import { devChains, networkConfig } from '../helper-hardhat-config'
 import { DeployFunction } from 'hardhat-deploy/dist/types'
 import { VRFCoordinatorV2Mock } from '../typechain-types'
 import verify from '../utils/verify'
-import { storeImages } from '../utils/uploadToPinata'
+import { storeImages, storeTokenURIMetadata } from '../utils/uploadToPinata'
 
 const imagesLocation = './images/randomNFT/'
 const metadataTemplate = {
@@ -82,7 +82,11 @@ const handleTokenURIs = async () => {
         tokenURIMetadata.description = `An adorable ${tokenURIMetadata.name} pup!`
         tokenURIMetadata.image = `ipfs://${imageUploadResponses[imageUploadResponseIndex].IpfsHash}`
         console.log(`Uploading ${tokenURIMetadata.name}...`)
+        const metadataUploadResponse = await storeTokenURIMetadata(tokenURIMetadata)
+        tokenURIs.push(`ipsf://${metadataUploadResponse?.IpfsHash}`)
     }
+    console.log('Token URIs uploaded! They are:')
+    console.log(tokenURIs)
     return tokenURIs
 }
 
