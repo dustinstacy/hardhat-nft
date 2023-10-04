@@ -74,6 +74,10 @@ describe('RandomIPFSNFT', () => {
             )
         })
 
-        it('Increments the token counter correctly', async () => {})
+        it('Increments the token counter correctly', async () => {
+            await randomIPFSNFT.requestNFT({ value: mintFee })
+            const tokenCounter = await randomIPFSNFT.getTokenCounter()
+            expect(tokenCounter).to.equal(1)
+        })
     })
 })
