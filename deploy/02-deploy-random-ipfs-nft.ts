@@ -89,7 +89,7 @@ const handleTokenURIs = async () => {
         tokenURIMetadata.image = `ipfs://${imageUploadResponses[imageUploadResponseIndex].IpfsHash}`
         console.log(`Uploading ${tokenURIMetadata.name}...`)
         const metadataUploadResponse = await storeTokenURIMetadata(tokenURIMetadata)
-        tokenURIs.push(`ipsf://${metadataUploadResponse?.IpfsHash}`)
+        tokenURIs.push(`ipfs://${metadataUploadResponse?.IpfsHash}`)
     }
     console.log('Token URIs uploaded! They are:')
     console.log(tokenURIs)
