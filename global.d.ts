@@ -12,7 +12,7 @@ export interface DeployInterface {
 interface networkConfigItem {
     vrfCoordinatorV2?: string
     entranceFee?: bigint
-    gasLane?: string
+    keyHash?: string
     subscriptionId?: string
     callbackGasLimit?: string
     interval?: number

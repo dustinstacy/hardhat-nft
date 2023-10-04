@@ -54,7 +54,7 @@ const deployRandomIPFSNFT: DeployFunction = async ({ getNamedAccounts, deploymen
 
     const args: any[] = [
         vrfCoordinatorV2Address,
-        networkConfig[network.name]['gasLane'],
+        networkConfig[network.name]['keyHash'],
         subscriptionId,
         networkConfig[network.name]['callbackGasLimit'],
         tokenURIs,
