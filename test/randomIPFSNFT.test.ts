@@ -80,4 +80,22 @@ describe('RandomIPFSNFT', () => {
             expect(tokenCounter).to.equal(1)
         })
     })
+
+    describe('withdraw', () => {
+        it('Allows the owner of the contract to withdraw mint fees', async () => {
+            const requestContract = randomIPFSNFT.connect(requester)
+            const tx = await requestContract.requestNFT({ value: mintFee })
+            await tx.wait(1)
+            const ownerContract = randomIPFSNFT.connect(deployer)
+            const ownerPreviousBalance = await ethers.provider.getBalance(deployer)
+            await ownerContract.withdraw()
+            const ownerEndingBalance = await ethers.provider.getBalance(deployer)
+            console.log(ownerPreviousBalance, ownerEndingBalance)
+            // Need to account for the minor variance in totals after transactions are processed
+            // gas?
+            expect(ownerEndingBalance).to.equal(ownerPreviousBalance + BigInt(mintFee))
+        })
+    })
+
+    // describe('getBreedFromModdedRNG', async () => {})
 })
