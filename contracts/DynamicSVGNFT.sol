@@ -2,18 +2,32 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "base64-sol/base64.sol";
 
-contract DynamicSVGNFT is ERC721, Ownable {
+contract DynamicSVGNFT is ERC721 {
     uint256 public _tokenCounter;
+    string private i_lowSVG;
+    string private i_highSVG;
+    string private constant BASE_64_ENCODED_SVG_PREFIX =
+        "data:image/svg+xml;base64,";
 
-    constructor() ERC721("Dynamic Faces", "FACE") {
+    constructor(
+        string memory lowSVG_,
+        string memory highSVG_
+    ) ERC721("Dynamic Faces", "FACE") {
         _tokenCounter = 0;
     }
 
     function mintNFT() public {
         _safeMint(msg.sender, _tokenCounter);
         _tokenCounter = _tokenCounter + 1;
+    }
+
+    function svgToImageURI(
+        string memory svg
+    ) public pure returns (string memory) {
+        string memory svgBase64Encoded = Base64.encode(bytes(string(abi.encodePacked(svg))));
+        return string(abi.encodePacked(BASE_64_ENCODED_SVG_PREFIX, svgBase64Encoded))
     }
 
     // function storeSVGInformation() internal {}
