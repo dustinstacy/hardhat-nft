@@ -3,18 +3,26 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "base64-sol/base64.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract DynamicSVGNFT is ERC721 {
-    uint256 public _tokenCounter;
+    AggregatorV3Interface internal immutable i_priceFeed;
     string private i_lowSVG;
     string private i_highSVG;
+    uint256 public _tokenCounter;
     string private constant BASE_64_ENCODED_SVG_PREFIX =
         "data:image/svg+xml;base64,";
 
+    mapping(uint256 => int256) public _tokenIdToHighValue;
+
     constructor(
+        address priceFeedAddress,
         string memory lowSVG_,
         string memory highSVG_
     ) ERC721("Dynamic Faces", "FACE") {
+        i_priceFeed = AggregatorV3Interface(priceFeedAddress);
+        i_lowSVG = svgToImageURI(lowSVG_);
+        i_highSVG = svgToImageURI(highSVG_);
         _tokenCounter = 0;
     }
 
@@ -30,7 +38,8 @@ contract DynamicSVGNFT is ERC721 {
             );
     }
 
-    function mintNFT() public {
+    function mintNFT(int256 highValue) public {
+        _tokenIdToHighValue[_tokenCounter] = highValue;
         _safeMint(msg.sender, _tokenCounter);
         _tokenCounter = _tokenCounter + 1;
     }
@@ -43,7 +52,12 @@ contract DynamicSVGNFT is ERC721 {
         uint256 tokenId
     ) public view override returns (string memory) {
         require(_exists(tokenId), "URI Query for nonexistent token");
-        string memory imageURI = "hi!";
+
+        (, int256 price, , , ) = i_priceFeed.latestRoundData();
+        string memory imageURI = i_lowSVG;
+        if (price >= _tokenIdToHighValue[tokenId]) {
+            imageURI = i_highSVG;
+        }
 
         return
             string(
