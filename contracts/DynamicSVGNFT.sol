@@ -35,6 +35,10 @@ contract DynamicSVGNFT is ERC721 {
         _tokenCounter = _tokenCounter + 1;
     }
 
+    function _baseURI() internal pure override returns (string memory) {
+        return "data:application/json;base64,";
+    }
+
     function tokenURI(
         uint256 tokenId
     ) public view override returns (string memory) {
