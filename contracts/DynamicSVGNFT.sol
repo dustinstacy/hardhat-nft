@@ -15,6 +15,8 @@ contract DynamicSVGNFT is ERC721 {
 
     mapping(uint256 => int256) public _tokenIdToHighValue;
 
+    event CreatedNFT(uint256 indexed tokenId, int256 highValue);
+
     constructor(
         address priceFeedAddress,
         string memory lowSVG_,
@@ -40,8 +42,9 @@ contract DynamicSVGNFT is ERC721 {
 
     function mintNFT(int256 highValue) public {
         _tokenIdToHighValue[_tokenCounter] = highValue;
-        _safeMint(msg.sender, _tokenCounter);
         _tokenCounter = _tokenCounter + 1;
+        _safeMint(msg.sender, _tokenCounter);
+        emit CreatedNFT(_tokenCounter, highValue);
     }
 
     function _baseURI() internal pure override returns (string memory) {
