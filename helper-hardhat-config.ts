@@ -19,6 +19,7 @@ export const networkConfig: networkConfigInfo = {
         interval: 30,
         blockConfirmations: 5,
         contractAddress: '0x7581803f45e8ae263d90cd13b6e97b53a97cda67',
+        ethUSDPriceFeed: '0x694AA1769357215DE4FAC081bf1f309aDC325306',
     },
 }
 

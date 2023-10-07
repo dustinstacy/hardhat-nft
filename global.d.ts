@@ -19,6 +19,7 @@ interface networkConfigItem {
     blockConfirmations?: number
     contractAddress?: string
     mintFee?: string
+    ethUSDPriceFeed?: string
 }
 
 export interface networkConfigInfo {
