@@ -7,8 +7,8 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract DynamicSVGNFT is ERC721 {
     AggregatorV3Interface internal immutable i_priceFeed;
-    string private i_lowSVG;
-    string private i_highSVG;
+    string private _lowSVG;
+    string private _highSVG;
     uint256 public _tokenCounter;
     string private constant BASE_64_ENCODED_SVG_PREFIX =
         "data:image/svg+xml;base64,";
@@ -23,8 +23,8 @@ contract DynamicSVGNFT is ERC721 {
         string memory highSVG_
     ) ERC721("Dynamic Faces", "FACE") {
         i_priceFeed = AggregatorV3Interface(priceFeedAddress);
-        i_lowSVG = svgToImageURI(lowSVG_);
-        i_highSVG = svgToImageURI(highSVG_);
+        _lowSVG = svgToImageURI(lowSVG_);
+        _highSVG = svgToImageURI(highSVG_);
         _tokenCounter = 0;
     }
 
@@ -57,9 +57,9 @@ contract DynamicSVGNFT is ERC721 {
         require(_exists(tokenId), "URI Query for nonexistent token");
 
         (, int256 price, , , ) = i_priceFeed.latestRoundData();
-        string memory imageURI = i_lowSVG;
+        string memory imageURI = _lowSVG;
         if (price >= _tokenIdToHighValue[tokenId]) {
-            imageURI = i_highSVG;
+            imageURI = _highSVG;
         }
 
         return
@@ -82,7 +82,19 @@ contract DynamicSVGNFT is ERC721 {
             );
     }
 
-    // function storeSVGInformation() internal {}
+    function getLowSVG() public view returns (string memory) {
+        return _lowSVG;
+    }
 
-    // function getSVGImage() public pure {}
+    function getHighSVG() public view returns (string memory) {
+        return _highSVG;
+    }
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
+        return i_priceFeed;
+    }
+
+    function getTokenCounter() public view returns (uint256) {
+        return _tokenCounter;
+    }
 }
