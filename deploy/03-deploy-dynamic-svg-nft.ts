@@ -1,8 +1,8 @@
-import { ethers, network } from 'hardhat'
+import { network } from 'hardhat'
 import { devChains, networkConfig } from '../helper-hardhat-config'
 import { DeployFunction } from 'hardhat-deploy/dist/types'
+import fs from 'fs'
 import verify from '../utils/verify'
-import { AddressLike } from 'ethers'
 
 const deployDynamicSVGNFT: DeployFunction = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log } = deployments
@@ -17,14 +17,23 @@ const deployDynamicSVGNFT: DeployFunction = async ({ getNamedAccounts, deploymen
         ethUSDPriceFeedAddress = networkConfig[network.name].ethUSDPriceFeed
     }
 
+    const lowSVG = fs.readFileSync('./images/dynamicNFT/frown.svg', { encoding: 'utf8' })
+    const highSVG = fs.readFileSync('./images/dynamicNFT/happy.svg', { encoding: 'utf8' })
+    const args: any[] = [ethUSDPriceFeedAddress, lowSVG, highSVG]
+
     log('-------------------------')
-    const args: any[] = []
+
     const dynamicSVGNFT = await deploy('DynamicSVGNFT', {
         from: deployer,
         args: args,
         log: true,
         waitConfirmations: networkConfig[network.name].blockConfirmations,
     })
+
+    if (!devChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+        log('Verifying...')
+        await verify(dynamicSVGNFT.address, args)
+    }
 }
 
 export default deployDynamicSVGNFT
