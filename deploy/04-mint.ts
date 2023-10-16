@@ -24,31 +24,33 @@ const mint: DeployFunction = async ({ getNamedAccounts, deployments }) => {
     // console.log(dynamicSVGNFT)
     // console.log(`Dynamic SVG NFT index 0 tokenURI: ${await dynamicSVGNFT.tokenURI(0)}`)
 
-    // const randomIPFSNFTDeployment = await deployments.get('RandomIPFSNFT')
-    // const randomIPFSNFT = await ethers.getContractAt(
-    //     'RandomIPFSNFT',
-    //     randomIPFSNFTDeployment.address
-    // )
-    // const mintFee = await randomIPFSNFT.getMintFee()
+    const randomIPFSNFTDeployment = await deployments.get('RandomIPFSNFT')
+    const randomIPFSNFT = await ethers.getContractAt(
+        'RandomIPFSNFT',
+        randomIPFSNFTDeployment.address
+    )
+    const mintFee = await randomIPFSNFT.getMintFee()
+    const randomIPFSMintTx = await randomIPFSNFT.requestNFT({ value: mintFee.toString() })
+    const randomIPFSMintTxReceipt = await randomIPFSMintTx.wait(1)
 
-    // await new Promise(async (resolve, reject) => {
-    //     setTimeout(resolve, 300000)
-    //     const nftMintedEvent: TypedContractEvent = randomIPFSNFT.filters['NFTMinted']
-    //     randomIPFSNFT.once(nftMintedEvent, async () => {
-    //         resolve(null)
-    //     })
-    //     const randomIPFSMintTx = await randomIPFSNFT.requestNFT({ value: mintFee.toString() })
-    //     const randomIPFSMintTxReceipt = await randomIPFSMintTx.wait(1)
-    //     if (devChains.includes(network.name)) {
-    //         const requestId = randomIPFSMintTxReceipt!.logs[1].topics[1]
-    //         const vrfCoordinatorV2Mock = await ethers.getContractAt(
-    //             'VRFCoordinatorV2Mock',
-    //             deployer
-    //         )
-    //         await vrfCoordinatorV2Mock.fulfillRandomWords(requestId, randomIPFSNFT.getAddress())
-    //     }
-    //     console.log(`Random IPFS NFT index 0 tokenURI: ${await randomIPFSNFT.tokenURI(0)}`)
-    // })
+    await new Promise(async (resolve, reject) => {
+        setTimeout(resolve, 300000)
+        const nftMintedEvent: TypedContractEvent = randomIPFSNFT.filters['NFTMinted']
+        randomIPFSNFT.once(nftMintedEvent, async () => {
+            resolve(null)
+        })
+
+        if (devChains.includes(network.name)) {
+            const requestId = randomIPFSMintTxReceipt!.logs[1].topics[1]
+            const vrfCoordinatorV2MockDeployment = await deployments.get('VRFCoordinatorV2Mock')
+            const vrfCoordinatorV2Mock = await ethers.getContractAt(
+                'VRFCoordinatorV2Mock',
+                vrfCoordinatorV2MockDeployment.address
+            )
+            await vrfCoordinatorV2Mock.fulfillRandomWords(requestId, randomIPFSNFT.getAddress())
+        }
+        console.log(`Random IPFS NFT index 0 tokenURI: ${await randomIPFSNFT.tokenURI(0)}`)
+    })
 }
 
 export default mint
