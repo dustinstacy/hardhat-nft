@@ -13,16 +13,16 @@ const mint: DeployFunction = async ({ getNamedAccounts, deployments }) => {
     console.log(basicNft)
     console.log(`Basic NFT index 0 tokenURI: ${await basicNft.tokenURI(0)}`)
 
-    // const highValue = ethers.parseEther('4000')
-    // const dynamicSVGNFTDeployment = await deployments.get('DynamicSVGNFT')
-    // const dynamicSVGNFT = await ethers.getContractAt(
-    //     'DynamicSVGNFT',
-    //     dynamicSVGNFTDeployment.address
-    // )
-    // const dynamiceSVGNFTMintTX = await dynamicSVGNFT.mintNFT(highValue)
-    // await dynamiceSVGNFTMintTX.wait(1)
-    // console.log(dynamicSVGNFT)
-    // console.log(`Dynamic SVG NFT index 0 tokenURI: ${await dynamicSVGNFT.tokenURI(0)}`)
+    const highValue = ethers.parseEther('4000')
+    const dynamicSVGNFTDeployment = await deployments.get('DynamicSVGNFT')
+    const dynamicSVGNFT = await ethers.getContractAt(
+        'DynamicSVGNFT',
+        dynamicSVGNFTDeployment.address
+    )
+    const dynamiceSVGNFTMintTX = await dynamicSVGNFT.mintNFT(highValue)
+    await dynamiceSVGNFTMintTX.wait(1)
+    console.log(dynamicSVGNFT)
+    console.log(`Dynamic SVG NFT index 0 tokenURI: ${await dynamicSVGNFT.tokenURI(0)}`)
 
     const randomIPFSNFTDeployment = await deployments.get('RandomIPFSNFT')
     const randomIPFSNFT = await ethers.getContractAt(
